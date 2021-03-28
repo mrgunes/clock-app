@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState,useEffect} from 'react';
 import './App.css';
 
 function App() {
@@ -6,8 +6,21 @@ function App() {
   let months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
   let [toggle, setToggle]=useState('Dark Mode');
+  let [state, setState]=useState({
+    hour:0,
+    minute:0,
+    second:0
+  });
 
-  let toogleHandle=(e)=>{
+  //let [second, setSecond]=useState(0);
+  let time= new Date();
+  // console.log(time);
+
+  let scale = (num, in_min, in_max, out_min, out_max) => {
+    return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+  }
+
+  let toogleHandle=()=>{
     let html=document.querySelector('html')
     if(html.classList.contains('dark')){
       html.classList.remove('dark');
@@ -18,18 +31,36 @@ function App() {
      }
   }
 
+  // let minutes=time.getMinutes();
+  // let seconds=time.getMinutes();
+  // let AMPMHours=hours % 12;
+  // let month= time.getMonth();
+  // let day=time.getDay();
+  // let date=time.getDate()
+
+  useEffect(()=>{
+    let timer=setInterval(()=>{
+      setState({
+        hour: scale(time.getHours()%12, 0, 12, 0, 360),
+        minute: scale(time.getMinutes(), 0, 59, 0, 360),
+        second: scale(time.getSeconds(), 0, 59, 0, 360)})
+    }, 1000);
+    return () => clearInterval(timer);
+  },[state]);
+  console.log(state)
+
   return (
     <div className='app'>
       <button className='toogle' onClick={toogleHandle}>{toggle}</button>
       <div className='clock-container'>
         <div className='clock'>
-          <div className='needle hour'></div>
-          <div className='needle minute'></div>
-          <div className='needle second'></div>
+          <div className='needle hour' style={{transform: `translate(-50%, -100%) rotate(${state.hour}deg)`}}></div>
+          <div className='needle minute' style={{transform: `translate(-50%, -100%) rotate(${state.minute}deg)`}}></div>
+          <div className='needle second' style={{transform: `translate(-50%, -100%) rotate(${state.second}deg)`}}></div>
           <div className='center-point'></div>
         </div>
-        <div className='time'>12:00</div>
-        <div className='date'>Sunday, March <span className='circle'>27</span></div>
+        <div className='time'>{`${time.getHours()}:${time.getMinutes() < 10 ? `0${time.getMinutes}` : `${time.getMinutes()}`}`}</div>
+        <div className='date'>{`${days[time.getDay()]}`}, {`${months[time.getMonth()]}`} <span className='circle'>{`${time.getDate()}`}</span></div>
       </div>
     </div>
   );
