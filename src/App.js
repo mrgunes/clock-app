@@ -12,7 +12,6 @@ function App() {
     second:0
   });
 
-  //let [second, setSecond]=useState(0);
   let time= new Date();
   //console.log(time);
 
@@ -40,7 +39,7 @@ function App() {
     }, 1000);
     return () => clearInterval(timer);
   },[state]);
-  console.log(state)
+  //console.log(state)
 
   let smallHour=()=>{
     if (time.getHours()<10){
